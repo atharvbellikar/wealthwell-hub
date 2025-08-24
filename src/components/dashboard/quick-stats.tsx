@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowUpIcon, ArrowDownIcon, TrendingUp, Wallet } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -49,10 +50,24 @@ export function QuickStats({ totalIncome, totalExpenses, netWorth, monthlyGrowth
     },
   ]
 
+  const [currency, setCurrency] = useState(() => {
+    const saved = localStorage.getItem('selected-currency')
+    return saved || 'USD'
+  })
+
+  useEffect(() => {
+    const handleCurrencyChange = (event: any) => {
+      setCurrency(event.detail.currency.code)
+    }
+    
+    window.addEventListener('currencyChanged', handleCurrencyChange)
+    return () => window.removeEventListener('currencyChanged', handleCurrencyChange)
+  }, [])
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: currency,
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount)

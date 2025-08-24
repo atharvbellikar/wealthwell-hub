@@ -9,8 +9,17 @@ const Analytics = () => {
   const [hasData, setHasData] = useState(false);
 
   useEffect(() => {
-    const transactions = localStorage.getItem('financial-transactions');
-    setHasData(!!(transactions && JSON.parse(transactions).length > 0));
+    const checkForData = () => {
+      try {
+        const transactions = localStorage.getItem('financial-transactions');
+        setHasData(!!(transactions && JSON.parse(transactions).length > 0));
+      } catch (error) {
+        console.error('Error reading localStorage:', error);
+        setHasData(false);
+      }
+    };
+    
+    checkForData();
   }, []);
 
   if (!hasData) {

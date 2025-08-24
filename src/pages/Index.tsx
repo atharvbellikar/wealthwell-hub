@@ -10,11 +10,19 @@ const Index = () => {
   const navigate = useNavigate();
   const [hasData, setHasData] = useState(false);
 
-  // Check if user has any financial data
   useEffect(() => {
-    const transactions = localStorage.getItem('financial-transactions');
-    const investments = localStorage.getItem('financial-investments');
-    setHasData(!!(transactions && JSON.parse(transactions).length > 0) || !!(investments && JSON.parse(investments).length > 0));
+    const checkForData = () => {
+      try {
+        const transactions = localStorage.getItem('financial-transactions');
+        const investments = localStorage.getItem('financial-investments');
+        setHasData(!!(transactions && JSON.parse(transactions).length > 0) || !!(investments && JSON.parse(investments).length > 0));
+      } catch (error) {
+        console.error('Error reading localStorage:', error);
+        setHasData(false);
+      }
+    };
+    
+    checkForData();
   }, []);
 
   // Mock data for demonstration (replace with real data from localStorage/API)

@@ -28,7 +28,21 @@ const currencies = [
 
 export function CurrencySelector() {
   const [open, setOpen] = useState(false)
-  const [selectedCurrency, setSelectedCurrency] = useState(currencies[0])
+  const [selectedCurrency, setSelectedCurrency] = useState(() => {
+    const saved = localStorage.getItem('selected-currency')
+    return saved ? currencies.find(c => c.code === saved) || currencies[0] : currencies[0]
+  })
+
+  const handleCurrencyChange = (currency: typeof currencies[0]) => {
+    setSelectedCurrency(currency)
+    localStorage.setItem('selected-currency', currency.code)
+    setOpen(false)
+    
+    // Dispatch custom event for other components to listen to currency changes
+    window.dispatchEvent(new CustomEvent('currencyChanged', { 
+      detail: { currency } 
+    }))
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -54,10 +68,7 @@ export function CurrencySelector() {
                 <CommandItem
                   key={currency.code}
                   value={currency.code}
-                  onSelect={() => {
-                    setSelectedCurrency(currency)
-                    setOpen(false)
-                  }}
+                  onSelect={() => handleCurrencyChange(currency)}
                 >
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
